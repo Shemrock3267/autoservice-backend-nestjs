@@ -1,98 +1,352 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Automobile Service Station - Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend API service for the Automobile Service Station Management System, built with NestJS, PostgreSQL, and Prisma ORM.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Overview
 
-## Description
+This is the backend REST API that powers the automobile service station mobile application. It handles user authentication, service bookings, order management, accessories shop, and real-time notifications.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🛠️ Technology Stack
 
-## Project setup
+- **Framework**: NestJS
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Authentication**: JWT
+- **Validation**: class-validator, class-transformer
+- **Documentation**: Swagger/OpenAPI
+- **Containerization**: Docker
+- **Push Notifications**: Firebase Cloud Messaging / AWS SNS
 
-```bash
-$ yarn install
-```
+## 📦 Prerequisites
 
-## Compile and run the project
+- Node.js (v18 or higher)
+- npm or yarn
+- PostgreSQL (v14 or higher)
+- Docker & Docker Compose (optional)
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+git clone <repository-url>
+cd automobile-service-backend
 ```
 
-## Run tests
+### 2. Install Dependencies
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+yarn install
 ```
 
-## Deployment
+### 3. Environment Configuration
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Create a `.env` file in the root directory:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/auto_service_db?schema=public"
+
+# JWT
+JWT_SECRET="your-super-secret-jwt-key"
+JWT_EXPIRATION="1d"
+
+# Server
+PORT=5353
+NODE_ENV=development
+
+# AWS (Optional)
+AWS_REGION="us-east-1"
+AWS_ACCESS_KEY_ID="your-access-key"
+AWS_SECRET_ACCESS_KEY="your-secret-key"
+
+# Push Notifications
+FCM_SERVER_KEY="your-fcm-server-key"
+
+# CORS
+CORS_ORIGIN="http://localhost:8100"
+```
+
+### 4. Database Setup
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+# Generate Prisma Client
+npx prisma generate
+
+# Run migrations
+npx prisma migrate dev
+
+# Seed database (optional)
+npx prisma db seed
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 5. Run the Application
 
-## Resources
+```bash
+# Development mode
+npm run start:dev
 
-Check out a few resources that may come in handy when working with NestJS:
+# Production mode
+npm run build
+npm run start:prod
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Debug mode
+npm run start:debug
+```
 
-## Support
+The API will be available at `http://localhost:3000`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🐳 Docker Setup
 
-## Stay in touch
+### Using Docker Compose
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+# Start all services (app + database)
+docker-compose up -d
 
-## License
+# View logs
+docker-compose logs -f
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+# Stop services
+docker-compose down
+```
+
+### Docker Commands
+
+```bash
+# Build image
+docker build -t auto-service-backend .
+
+# Run container
+docker run -p 3000:3000 auto-service-backend
+```
+
+## 📚 API Documentation
+
+Once the server is running, access the Swagger documentation at:
+
+```
+http://localhost:3000/api/docs
+```
+
+## 🏗️ Project Structure
+
+```
+src/
+├── modules/
+│   ├── auth/              # Authentication & Authorization
+│   ├── users/             # User management
+│   ├── services/          # Service offerings
+│   ├── orders/            # Order management
+│   ├── vehicles/          # Vehicle information
+│   ├── accessories/       # Accessories shop
+│   ├── notifications/     # Push notifications
+│   └── admin/             # Admin panel operations
+├── common/
+│   ├── decorators/        # Custom decorators
+│   ├── guards/            # Auth guards
+│   ├── interceptors/      # Request/response interceptors
+│   ├── filters/           # Exception filters
+│   └── pipes/             # Validation pipes
+├── config/                # Configuration files
+├── prisma/
+│   ├── schema.prisma      # Database schema
+│   └── migrations/        # Database migrations
+├── app.module.ts
+└── main.ts
+```
+
+## 🗄️ Database Schema
+
+### Core Tables
+
+- **users** - User accounts (customers and admins)
+- **services** - Available services
+- **orders** - Service orders
+- **vehicles** - Customer vehicles
+- **accessories** - Shop items
+- **notifications** - Notification logs
+- **admin_users** - Admin-specific data
+
+
+## 🔐 Authentication & Authorization
+
+### User Roles
+
+- **REGULAR_USER** - Standard customers
+- **ADMIN** - Service administrators
+- **SUPER_ADMIN** - System administrators
+
+### Protected Routes
+
+```typescript
+// Example: Protect route with JWT
+@UseGuards(JwtAuthGuard)
+@Get('profile')
+getProfile(@Request() req) {
+  return req.user;
+}
+
+// Example: Role-based access
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('ADMIN', 'SUPER_ADMIN')
+@Patch('orders/:id/status')
+updateOrderStatus() {
+  // Only admins can access
+}
+```
+
+## 📡 API Endpoints
+
+### Authentication
+- `POST /auth/register` - Register new user
+- `POST /auth/login` - User login
+- `POST /auth/verify-phone` - Verify phone number
+- `POST /auth/refresh` - Refresh access token
+
+### Services
+- `GET /services` - List all services
+- `GET /services/:id` - Get service details
+- `POST /services` - Create service (Admin)
+- `PATCH /services/:id` - Update service (Admin)
+
+### Orders
+- `GET /orders` - Get user orders
+- `GET /orders/:id` - Get order details
+- `POST /orders` - Create new order
+- `PATCH /orders/:id/status` - Update order status (Admin)
+
+### Accessories
+- `GET /accessories` - List accessories
+- `POST /accessories/order` - Order accessories
+
+### Vehicles
+- `GET /vehicles` - Get user vehicles
+- `POST /vehicles` - Add vehicle
+- `PATCH /vehicles/:id` - Update vehicle
+
+### Admin
+- `GET /admin/users` - List all users (Super Admin)
+- `POST /admin/create-admin` - Add admin user (Super Admin)
+- `GET /admin/orders` - View all orders (Admin)
+
+## 🔔 Push Notifications
+
+Notifications are sent when:
+- Order status changes
+- Order reminder (24 hours before)
+- Booking confirmation
+- Order completion
+
+## 🧪 Testing
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
+```
+
+## 🚢 Deployment
+
+### AWS Deployment
+
+1. **Build Docker image**
+```bash
+docker build -t auto-service-backend:latest .
+```
+
+2. **Push to ECR**
+```bash
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
+docker tag auto-service-backend:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/auto-service-backend:latest
+docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/auto-service-backend:latest
+```
+
+3. **Deploy to ECS/EC2**
+- Configure ECS task definition
+- Set environment variables
+- Configure load balancer
+- Deploy service
+
+### Environment Variables (Production)
+
+Ensure all production environment variables are set:
+- Database connection strings
+- JWT secrets
+- AWS credentials
+- Push notification keys
+
+## 📝 Scripts
+
+```json
+{
+  "start": "nest start",
+  "start:dev": "nest start --watch",
+  "start:debug": "nest start --debug --watch",
+  "start:prod": "node dist/main",
+  "build": "nest build",
+  "test": "jest",
+  "test:watch": "jest --watch",
+  "test:cov": "jest --coverage",
+  "test:e2e": "jest --config ./test/jest-e2e.json",
+  "prisma:generate": "prisma generate",
+  "prisma:migrate": "prisma migrate dev",
+  "prisma:studio": "prisma studio"
+}
+```
+
+## 🔧 Prisma Commands
+
+```bash
+# Open Prisma Studio (Database GUI)
+npx prisma studio
+
+# Create a migration
+npx prisma migrate dev --name migration_name
+
+# Reset database
+npx prisma migrate reset
+
+# Generate Prisma Client
+npx prisma generate
+```
+
+## 🐛 Troubleshooting
+
+### Database Connection Issues
+```bash
+# Check PostgreSQL is running
+pg_isready
+
+# Test connection
+psql -h localhost -U user -d auto_service_db
+```
+
+### Port Already in Use
+```bash
+# Kill process on port 5353
+lsof -ti:5353 | xargs kill -9
+```
+
+### Prisma Client Not Generated
+```bash
+npx prisma generate
+```
+
+
+## 📄 License
+
+[Specify your license]
+
+## 📧 Support
+
+For issues and questions, please open an issue in the repository.
+
+---
+
+**Frontend Repository**: [Link to mobile app repository]
