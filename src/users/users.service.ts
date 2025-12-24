@@ -5,9 +5,10 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
-import { CreateUserDto } from './dto/create-user.dto.js';
-import { UpdateUserDto } from './dto/update-user.dto.js';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { HASH_NUMBER } from '../constants';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +23,10 @@ export class UsersService {
       throw new ConflictException('user already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      HASH_NUMBER,
+    );
 
     const user = await this.prisma.client.users.create({
       data: {
@@ -58,7 +62,7 @@ export class UsersService {
     }
 
     if (updateUserDto.password) {
-      updateUserDto.password = bcrypt.hash(updateUserDto.password, 10);
+      updateUserDto.password = bcrypt.hash(updateUserDto.password, HASH_NUMBER);
     }
 
     return this.prisma.client.users.update({
