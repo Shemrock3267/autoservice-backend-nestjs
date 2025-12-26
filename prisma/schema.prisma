@@ -14,13 +14,44 @@ datasource db {
 }
 
 model Users {
-  id           Int       @id @default(autoincrement())
-  firstname    String?   @db.VarChar(255)
-  lastname     String?   @db.VarChar(255)
-  username     String?   @db.VarChar(255)
-  password     String?   @db.VarChar(255)
-  email        String?   @db.VarChar(255)
-  phone        String?   @db.VarChar(255)
-  created_date DateTime? @default(dbgenerated("(now())::timestamp without time zone")) @db.Timestamp(6)
-  otp          String?   @db.VarChar(255)
+  id              Int               @id @default(autoincrement())
+  firstname       String?           @db.VarChar(255)
+  lastname        String?           @db.VarChar(255)
+  username        String?           @db.VarChar(255)
+  password        String?           @db.VarChar(255)
+  email           String?           @db.VarChar(255)
+  phone           String?           @db.VarChar(255)
+  created_date    DateTime?         @default(dbgenerated("(now())::timestamp without time zone")) @db.Timestamp(6)
+  otp             String?           @db.VarChar(255)
+  verifications   Verifications[]
+  verified_emails Verified_emails[]
+}
+
+model Verifications {
+  verification_id   Int               @id @default(autoincrement())
+  users_id          Int
+  type              Verification_type
+  verification_code String            @db.VarChar(255)
+  verified          Boolean?          @default(false)
+  created_at        DateTime?         @default(dbgenerated("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")) @db.Timestamp(6)
+  expires_at        DateTime?         @db.Timestamp(6)
+  verified_at       DateTime?         @db.Timestamp(6)
+  users             Users             @relation(fields: [users_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([verification_code], map: "idx_verifications_token")
+  @@index([users_id, type], map: "idx_verifications_user_id_type")
+}
+
+model Verified_emails {
+  id          Int      @id(map: "verified_emails_pk") @default(autoincrement())
+  user_id     Int?
+  email       String?  @db.VarChar(255)
+  raw         Json?    @db.Json
+  is_verified Boolean?
+  users       Users?   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "verified_emails_users_users_id_fk")
+}
+
+enum Verification_type {
+  Email
+  Phone
 }
