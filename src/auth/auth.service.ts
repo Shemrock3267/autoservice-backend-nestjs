@@ -4,12 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { UsersService } from '../users/users.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
 import * as bcrypt from 'bcrypt';
-import { User } from '../users/entities/user.entity';
-import { TokensDto } from './dto/tokens.dto';
-import { HASH_NUMBER } from '../constants';
+import { User } from '../users/entities/user.entity.js';
+import { TokensDto } from './dto/tokens.dto.js';
+import { HASH_NUMBER } from '../constants/index.js';
 
 @Injectable()
 export class AuthService {

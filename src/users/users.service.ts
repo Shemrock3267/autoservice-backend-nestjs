@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import { HASH_NUMBER } from '../constants';
+import { CreateUserDto } from './dto/create-user.dto.js';
+import { UpdateUserDto } from './dto/update-user.dto.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { HASH_NUMBER } from '../constants/index.js';
 
 @Injectable()
 export class UsersService {

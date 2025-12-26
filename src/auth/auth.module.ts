@@ -3,13 +3,13 @@ import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import process from 'process';
-import { UsersService } from '../users/users.service';
-import { LocalStrategy } from './strategies/local-strategy';
-import { JwtStrategy } from './strategies/jwt-strategy';
-import { JwtNotVerifiedStrategy } from './strategies/jwt-not-verified-strategy';
-import { RefreshJwtStrategy } from './strategies/refresh-token.strategy';
+import { UsersService } from '../users/users.service.js';
+import { LocalStrategy } from './strategies/local-strategy.js';
+import { JwtStrategy } from './strategies/jwt-strategy.js';
+import { JwtNotVerifiedStrategy } from './strategies/jwt-not-verified-strategy.js';
+import { RefreshJwtStrategy } from './strategies/refresh-token.strategy.js';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 const DEFAULT_ADMIN = {
   email: `${process.env.ADMIN_NAME}`,
