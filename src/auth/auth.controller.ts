@@ -22,7 +22,6 @@ import {
 
 import { AuthService } from './auth.service.js';
 import { UsersService } from '../users/users.service.js';
-import { JwtGuard } from './guards/jwt-auth.guard.js';
 import { TokensDto } from './dto/tokens.dto.js';
 import { AuthUserDto } from './dto/auth-user.dto.js';
 import { User } from '../users/entities/user.entity.js';
@@ -34,6 +33,7 @@ import { GetCurrentUser } from '../common/decorators/get-current-user.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { ConfirmEmailDto } from './dto/confirm-email.dto.js';
 import { RefreshTokenDto } from './dto/refresh-token.dto.js';
+import { LocalAuthGuard } from './guards/local-auth.guard.js';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -49,7 +49,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(LocalAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('login')
   @ApiOperation({ operationId: 'login' })
@@ -149,11 +149,11 @@ export class AuthController {
     @GetCurrentUser() user: User,
     @Body() confirmEmailDto: ConfirmEmailDto,
   ) {
-    await this.authService.confirmEmail(user.id, confirmEmailDto.code)
+    await this.authService.confirmEmail(user.id, confirmEmailDto.code);
 
     const confirmation = await this.authService.getUserConfirmation(user.id);
 
-    return await this.authService.login(user as User, !!confirmation?.verified)
+    return await this.authService.login(user as User, !!confirmation?.verified);
   }
 
   @UseGuards(JwtNotVerifiedAuthGuard)
@@ -166,7 +166,7 @@ export class AuthController {
   async isVerified(@GetCurrentUser() user: User) {
     const userRecord = await this.authService.getUserConfirmation(user.id);
 
-    if(!userRecord) {
+    if (!userRecord) {
       throw new NotFoundException('User is not verified');
     }
 
@@ -186,8 +186,8 @@ export class AuthController {
     const confirmation = await this.authService.getUserConfirmation(user.id);
 
     // todo add logic if no confirmation then send code via email service
-    if(!confirmation) {
-      return console.log('sending confirmation...')
+    if (!confirmation) {
+      return console.log('sending confirmation...');
     }
 
     throw new BadRequestException('User already confirmed');
@@ -206,11 +206,14 @@ export class AuthController {
   ) {
     const confirmation = await this.authService.getUserConfirmation(user.id);
 
-    const accessToken = await this.authService.refreshToken(user, !!confirmation?.verified)
+    const accessToken = await this.authService.refreshToken(
+      user,
+      !!confirmation?.verified,
+    );
 
     return new TokensDto({
       accessToken,
-      refreshToken: refreshData.refreshToken
-    })
+      refreshToken: refreshData.refreshToken,
+    });
   }
 }
