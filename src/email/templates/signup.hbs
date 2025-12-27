@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Welcome Email</title>
+</head>
+<body>
+<table style="width: 100%; height: 50px;">
+  <tr>
+    <td style="text-align: center; vertical-align: middle; padding-bottom: 20px; padding-top: 20px;">
+      <img src="{{logo}}" alt="Logo" style="width: 157px; height: 18px;">
+    </td>
+  </tr>
+</table>
+<h1>Welcome, {{firstname}} {{lastname}}!</h1>
+<p>Your registration is complete.</p>
+<p>Thank you for joining us.</p>
+<p>Your verification code is: <b>{{code}}</b></p>
+<a href="{{domain}}/confirm-email" style="display: inline-block; padding: 10px 20px; background-color: #1976d2; color: #fff; text-decoration: none; border-radius: 10px; margin-top: 20px;">Confirm email</a>
+</body>
+</html>
