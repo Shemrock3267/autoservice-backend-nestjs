@@ -160,7 +160,7 @@ export class AuthController {
 
     await this.authService.changePassword(user.id, password);
 
-    // todo add send via emailService the password update notification
+    await this.emailService.passwordUpdated(user as User);
   }
 
   @UseGuards(JwtNotVerifiedAuthGuard)
