@@ -135,7 +135,11 @@ export class AuthController {
 
     const user = await this.authService.resetPassword(password, otp);
 
-    // todo add send email through email service that password has been updated and pass user object into it
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.emailService.passwordUpdated(user as User);
   }
 
   // Authenticated user changes password
