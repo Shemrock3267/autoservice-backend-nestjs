@@ -10,6 +10,9 @@ import { JwtNotVerifiedStrategy } from './strategies/jwt-not-verified-strategy.j
 import { RefreshJwtStrategy } from './strategies/refresh-token.strategy.js';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { EmailService } from '../email/email.service.js';
+import { PgBossService } from '../common/modules/pgboss/pgboss.service.js';
+import {SparkpostService} from '../common/modules/sparkpost/sparkpost.service.js';
 
 const DEFAULT_ADMIN = {
   email: `${process.env.ADMIN_NAME}`,
@@ -34,9 +37,9 @@ const DEFAULT_ADMIN = {
     JwtService,
     PrismaService,
     ConfigService,
-    // PgBossService,
-    // EmailService,
-    // SparkPostService,
+    PgBossService,
+    EmailService,
+    SparkpostService,
   ],
 })
 export class AuthModule {}

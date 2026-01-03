@@ -19,6 +19,13 @@ export class AuthService {
     private prisma: PrismaService,
   ) {}
 
+  #getExpiryDate() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 15);
+
+    return now.toISOString();
+  };
+
   async validateUser(email: string, password: string) {
     const existingUser = await this.usersService.findOneByEmail(email);
 
@@ -34,7 +41,7 @@ export class AuthService {
   }
 
   async login(user: User, isVerified: boolean) {
-    const {password, ...safeUser} = user;
+    const { password, ...safeUser } = user;
 
     const payload = {
       users_id: user.id,
@@ -57,20 +64,20 @@ export class AuthService {
   }
 
   async refreshToken(user: User, isVerified: boolean) {
-    const {password, ...safeUser} = user;
+    const { password, ...safeUser } = user;
 
     const payload = {
       users_id: user.id,
       sub: {
         ...safeUser,
         isVerified,
-      }
-    }
+      },
+    };
 
     return this.jwtService.sign(payload, {
       expiresIn: '1h',
       secret: `${process.env.JWT_SECRET}`,
-    })
+    });
   }
 
   async forgotPassword(email: string) {
@@ -79,7 +86,7 @@ export class AuthService {
       throw new NotFoundException(`User ${email} not found`);
     }
 
-    const randomId = crypto.randomUUID()
+    const randomId = crypto.randomUUID();
 
     await this.prisma.client.users.update({
       where: {
@@ -96,13 +103,13 @@ export class AuthService {
   async changePassword(userId: number, password: string) {
     await this.prisma.client.users.update({
       where: {
-        id: userId
+        id: userId,
       },
       data: {
         password: bcrypt.hash(password, HASH_NUMBER),
         otp: null,
-      }
-    })
+      },
+    });
   }
 
   async resetPassword(password: string, otp: string) {
@@ -134,7 +141,7 @@ export class AuthService {
     });
   }
 
-  async confirmEmail(id: number, code: string){
+  async confirmEmail(id: number, code: string) {
     const userRecord = await this.getUserConfirmation(id, code);
 
     if (!userRecord) {
@@ -145,14 +152,38 @@ export class AuthService {
       throw new ConflictException('User already verified');
     }
 
+    if (userRecord.expires_at && new Date() > userRecord.expires_at) {
+      throw new BadRequestException('Verification code has expired');
+    }
+
     await this.prisma.client.verifications.update({
       where: {
-        verification_id: userRecord.verification_id
+        verification_id: userRecord.verification_id,
       },
       data: {
         verified: true,
         verified_at: new Date().toISOString(),
-      }
-    })
+      },
+    });
+  }
+
+  async createEmailVerification(userId: number): Promise<string> {
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000,
+    ).toString();
+
+    const expiresAt = this.#getExpiryDate();
+
+    await this.prisma.client.verifications.create({
+      data: {
+        users_id: userId,
+        type: 'Email',
+        verification_code: verificationCode,
+        expires_at: expiresAt,
+        verified: false,
+      },
+    });
+
+    return verificationCode;
   }
 }
