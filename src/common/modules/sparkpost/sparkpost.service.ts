@@ -12,7 +12,9 @@ export class SparkpostService {
   constructor(protected configService: ConfigService) {
     const sparkpostApiKey = configService.get<string>('SPARKPOST_API_KEY');
 
-    this.client = new SparkPost(sparkpostApiKey);
+    this.client = new SparkPost(sparkpostApiKey, {
+      endpoint: 'https://api.eu.sparkpost.com',
+    });
   }
 
   async sendEmail(

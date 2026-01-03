@@ -43,7 +43,7 @@ export class EmailService {
     return `${this.#getDomain(env)}/images/kcb-service-logo.png`;
   }
 
-  async sendSignupEmail(user: User, code: string) {
+  async sendSignupEmail(user: Omit<User,'password'>, code: string) {
     await this.sendEmail('signup', 'Welcome!', { ...user, code });
   }
 
@@ -112,11 +112,16 @@ export class EmailService {
     options: T,
   ): Promise<string | undefined> {
     try {
-      const templatesFolderPath = path.join(__dirname, './templates');
       const templatePath = path.join(
-        templatesFolderPath,
+        process.cwd(),
+        'src',
+        'email',
+        'templates',
         `${templateName}.hbs`,
       );
+
+      console.log('Loading template from:', templatePath);
+
       const templateSource = await readAsyncFile(templatePath, 'utf8');
       const env = this.configService.get('NODE_ENV');
 
@@ -125,6 +130,8 @@ export class EmailService {
         logo: this.#getLogoSrc(env),
         domain: this.#getDomain(env),
       });
-    } catch (e) {}
+    } catch (e) {
+      console.error('Load template error: ',e.message);
+    }
   }
 }

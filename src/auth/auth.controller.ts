@@ -7,6 +7,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   NotFoundException,
   Post,
   UseGuards,
@@ -34,6 +35,7 @@ import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { ConfirmEmailDto } from './dto/confirm-email.dto.js';
 import { RefreshTokenDto } from './dto/refresh-token.dto.js';
 import { LocalAuthGuard } from './guards/local-auth.guard.js';
+import { EmailService } from '../email/email.service.js';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -41,6 +43,7 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
+    private emailService: EmailService,
   ) {}
 
   #validatePasswordMatch(password: string, repeatPassword: string): void {
@@ -83,9 +86,23 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
-    const confirmation = await this.authService.getUserConfirmation(user.id);
 
-    // todo add email sending service step
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const verificationCode = await this.authService.createEmailVerification(
+      user.id,
+    );
+
+    try {
+      await this.emailService.sendSignupEmail(
+        user as Omit<User, 'password'>,
+        verificationCode,
+      );
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
 
     return user;
   }
@@ -99,7 +116,11 @@ export class AuthController {
       forgotPasswordDto.email,
     );
 
-    // todo add sendResetEmail from emailService
+    await this.emailService.sendResetEmail(
+      user as User,
+      id,
+      forgotPasswordDto.redirectURL,
+    );
   }
 
   // Unauthenticated user changes password
@@ -114,7 +135,11 @@ export class AuthController {
 
     const user = await this.authService.resetPassword(password, otp);
 
-    // todo add send email through email service that password has been updated and pass user object into it
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.emailService.passwordUpdated(user as User);
   }
 
   // Authenticated user changes password
@@ -135,7 +160,7 @@ export class AuthController {
 
     await this.authService.changePassword(user.id, password);
 
-    // todo add send via emailService the password update notification
+    await this.emailService.passwordUpdated(user as User);
   }
 
   @UseGuards(JwtNotVerifiedAuthGuard)
@@ -185,12 +210,22 @@ export class AuthController {
   async resendCode(@GetCurrentUser() user: User) {
     const confirmation = await this.authService.getUserConfirmation(user.id);
 
-    // todo add logic if no confirmation then send code via email service
-    if (!confirmation) {
-      return console.log('sending confirmation...');
+    if (confirmation && confirmation.verified) {
+      throw new BadRequestException('User already confirmed');
     }
 
-    throw new BadRequestException('User already confirmed');
+    const verificationCode = await this.authService.createEmailVerification(user.id);
+
+    try {
+      await this.emailService.sendSignupEmail(
+        user as Omit<User, 'password'>,
+        verificationCode,
+      );
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
+
+    return { message: 'Verification code sent successfully' };
   }
 
   @UseGuards(JwtNotVerifiedAuthGuard)
